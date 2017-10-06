@@ -44,49 +44,18 @@ namespace Mono_Test {
         /// <summary>
         /// represents the current control scheme
         /// </summary>
-        private static gameControl[] controlMap = new gameControl[Enum.GetNames(typeof(controlCode)).Length];
+        private static controlScheme controlMap;
         /// <summary>
         /// applies the default control scheme
         /// </summary>
         public static void setDefaultControls() {
-            controlMap[(int)controlCode.menuSelect] = gameControl.keyboardControl(Keys.Enter); 
-            controlMap[(int)controlCode.menuNext] = gameControl.keyboardControl(Keys.Down);
-            controlMap[(int)controlCode.menuPrevious] = gameControl.keyboardControl(Keys.Up); 
-            controlMap[(int)controlCode.left] = gameControl.keyboardControl(Keys.Left);
-            controlMap[(int)controlCode.right] = gameControl.keyboardControl(Keys.Right); 
-            controlMap[(int)controlCode.up] = gameControl.keyboardControl(Keys.Up); 
-            controlMap[(int)controlCode.down] = gameControl.keyboardControl(Keys.Down); 
-            controlMap[(int)controlCode.jump] = gameControl.keyboardControl(Keys.Z); 
-            controlMap[(int)controlCode.use] = gameControl.keyboardControl(Keys.Space); 
-            controlMap[(int)controlCode.attackPrimary] = gameControl.keyboardControl(Keys.C); 
-            controlMap[(int)controlCode.attackSecondary] = gameControl.keyboardControl(Keys.X);
-            controlMap[(int)controlCode.pause] = gameControl.keyboardControl(Keys.P);
+            controlMap = controlScheme.getDefaultControlScheme();
         }                                                                                                        
 
         /// <summary>
         /// the current control scheme
         /// </summary>
-        public static gameControl[] controls { get { return controlMap; } }
-
-        private static bool[] controlState = new bool[controls.Length];
-        /// <summary>
-        /// retreives user input to determine the state of whether controls are active or not
-        /// </summary>
-        public static void refreshControlState() {
-            try {
-                for (int i = controlState.Length - 1; i >= 0; i--) controlState[i] = controlMap[i].isActive();
-            } catch(Exception e) {
-                log_e(e);
-                throw new Exception("You must first initialize the controls before accessing them, try using `setDefaultControls()`");
-            }
-        }
-        /// <summary>
-        /// checks to see if a specific control is active
-        /// </summary>
-        /// <param name="c">control to check</param>
-        public static bool isControlActivated(controlCode c) {
-            return controlState[(int)c];
-        }
+        public static controlScheme controls { get { return controlMap; } }
         
         /// <summary>
         /// represents the total time elapsed since the game was first run
@@ -101,8 +70,7 @@ namespace Mono_Test {
         /// main general logic tick
         /// </summary>
         public static void tick() {
-            refreshControlState();
-
+            controlMap.checkUserInput();
         }
         /// <summary>
         /// main logic tick for game, update world, physics, collisions, etc
@@ -160,22 +128,38 @@ namespace Mono_Test {
     public class controlBinding {
         public controlBinding() {
             active = true;
+            trigger = triggerType.eachTick;
+        }
+        /// <summary>
+        /// initializes a control binding with the specified data
+        /// </summary>
+        /// <param name="controlA">the game control to check for input</param>
+        /// <param name="actionA">the action to perform when the binding is triggered</param>
+        /// <param name="triggerA">how the binding will be activated</param>
+        public controlBinding(gameControl controlA, controlAction actionA, triggerType triggerA = triggerType.eachTick) {
+            active = true;
+            control = controlA;
+            action = actionA;
+            trigger = triggerA;
         }
 
         public enum triggerType {
             eachTick,
             firstTick,
+            release,
+            interval
         }
-        public delegate void controlAction(object args);
+        public delegate void controlAction(object args = null, controlBinding self = null);
         public gameControl control;
         public controlAction action;
         public triggerType trigger;
         public object args;
         public bool active;
         private uint ticksTriggered;
+        private object triggerArgs;
 
         /// <summary>
-        /// checks to see if the control binding is being activated
+        /// checks to see if the control binding is being triggered
         /// </summary>
         public void check() {
             if (!active) return;
@@ -183,15 +167,32 @@ namespace Mono_Test {
                 switch (trigger) {
                     case triggerType.firstTick:
                         if (ticksTriggered == 0)
-                            action(args);
+                            action(args, this);
                         break;
                     case triggerType.eachTick:
-                        action(args);
+                        action(args, this);
+                        break;
+                    case triggerType.interval:
+                        if (ticksTriggered % (uint)triggerArgs == 0)
+                            action(args, this);
                         break;
                 }
                 ticksTriggered++;
             }
-            else ticksTriggered = 0;
+            else {
+                if (trigger == triggerType.release && ticksTriggered > 0)
+                    action(args, this);
+                ticksTriggered = 0;
+            }
+        }
+
+        /// <summary>
+        /// sets the trigger to `interval` and sets the trigger args to the specified value
+        /// </summary>
+        /// <param name="ticks">how many ticks the delay is between each time the control action is performed</param>
+        public void setTriggerInterval(uint ticks) {
+            trigger = triggerType.interval;
+            triggerArgs = ticks;
         }
     }
     public class controlScheme {
@@ -207,6 +208,27 @@ namespace Mono_Test {
         public void checkUserInput() {
             foreach (controlBinding binding in bindings)
                 binding.check();
+        }
+
+        public static controlScheme getDefaultControlScheme() {
+            controlScheme r = new controlScheme();
+
+            r.bindings = new List<controlBinding>() {
+                new controlBinding(gameControl.keyboardControl(Keys.Enter), ca_LogTrigger, controlBinding.triggerType.firstTick),
+                new controlBinding(gameControl.keyboardControl(Keys.Up), ca_LogTrigger, controlBinding.triggerType.firstTick),
+                new controlBinding(gameControl.keyboardControl(Keys.Down), ca_LogTrigger, controlBinding.triggerType.firstTick),
+                new controlBinding(gameControl.keyboardControl(Keys.Right), ca_LogTrigger, controlBinding.triggerType.firstTick),
+                new controlBinding(gameControl.keyboardControl(Keys.Left), ca_LogTrigger, controlBinding.triggerType.firstTick),
+                new controlBinding(gameControl.keyboardControl(Keys.Z), ca_LogTrigger, controlBinding.triggerType.firstTick),
+                new controlBinding(gameControl.keyboardControl(Keys.X), ca_LogTrigger, controlBinding.triggerType.firstTick),
+                new controlBinding(gameControl.keyboardControl(Keys.C), ca_LogTrigger, controlBinding.triggerType.firstTick),
+                new controlBinding(gameControl.keyboardControl(Keys.Space), ca_LogTrigger, controlBinding.triggerType.firstTick)
+            };
+
+            return r;
+        }
+        public static void ca_LogTrigger(object args, controlBinding self) {
+            global.log_d("control triggered: " + self.control.id.ToString());
         }
     }
 }
