@@ -34,6 +34,7 @@ namespace Mono_Test {
         protected override void LoadContent() {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            global.loadUI();
         }
 
         /// <summary>
@@ -50,7 +51,7 @@ namespace Mono_Test {
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime) {
-            global.updateTotalTimeElapsed(gameTime.ElapsedGameTime);
+            global.updateTotalTimeElapsed(gameTime.TotalGameTime);
 
             global.tick();
 
