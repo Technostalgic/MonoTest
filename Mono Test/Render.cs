@@ -9,30 +9,101 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Mono_Test.render {
     public class renderDevice {
-        public renderDevice() { }
+        public renderDevice() {
+            renderQeue = new List<renderObject>();
+        }
 
-        public SpriteBatch spriteBatch;
+        /// <summary>
+        /// the queue that holds all the objects to be rendered
+        /// </summary>
+        List<renderObject> renderQeue;
 
-        public void render(Viewport v) {
+        /// <summary>
+        /// adds a render object to the end of the renderQueue
+        /// </summary>
+        /// <param name="obj"></param>
+        public void addObject(renderObject obj) {
+            renderQeue.Add(obj);
+        }
 
+        /// <summary>
+        /// renders all of the objects that the renderQueue holds
+        /// </summary>
+        public void render() {
+            rendering.spriteBatch.Begin();
+            for (var i = renderQeue.Count - 1; i >= 0; i--)
+                renderQeue[i].draw(rendering.spriteBatch);
+            renderQeue.Clear();
+            rendering.spriteBatch.End();
         }
     }
 
     public class renderObject {
-        public renderObject() { }
+        public renderObject() {
+            filter = new Color(255, 255, 255);
+        }
+
+        public Vector2 position;
+        public Vector2 scale;
+        public Vector2 origin;
+        public float rotation;
+        public Color filter;
 
         public void draw(SpriteBatch sb) {
+            sb.Draw(
+                rendering.getDefaultTexture(),
+                position,
+                null,
+                filter,
+                rotation,
+                origin,
+                scale,
+                SpriteEffects.None, 
+                0);
         }
     }
 
     public static class rendering {
+        public static GraphicsDeviceManager graphicsDM;
+        public static SpriteBatch spriteBatch;
+        /// <summary>
+        /// set the specified graphics object references, so they can be more easily globally 
+        /// accessed throu render.rendering.*
+        /// </summary>
+        /// <param name="gdm">the GraphicsDeviceManager to refer to</param>
+        /// <param name="sb">the SpriteBatch to refer to</param>
+        public static void setGraphicsRefs(GraphicsDeviceManager gdm, SpriteBatch sb) {
+            graphicsDM = gdm;
+            spriteBatch = sb;
+        }
+        
         public static Texture2D defaultTexture;
+        /// <summary>
+        /// returns a 1x1 white square texture, if the texture has not been initialized, 
+        /// it initializes the texture
+        /// </summary>
         public static Texture2D getDefaultTexture() {
             if (defaultTexture == null) {
-                defaultTexture = new Texture2D(null, 1, 1);
-                defaultTexture.SetData<byte>(new byte[] { 255 });
+                defaultTexture = new Texture2D(graphicsDM.GraphicsDevice, 1, 1);
+                defaultTexture.SetData<Color>(new Color[] { new Color(255, 255, 255) });
             }
             return defaultTexture;
+        }
+
+        /// <summary>
+        /// renders with the information in the given renderDevice
+        /// </summary>
+        /// <param name="device">the renderDevice to render</param>
+        public static void render(renderDevice device) {
+            device.render();
+        }
+        /// <summary>
+        /// renders a set of renderDevice objects
+        /// </summary>
+        /// <param name="renderDevices">a set of renderDevice objects to render</param>
+        public static void render(IEnumerable<renderDevice> renderDevices) {
+            foreach (renderDevice device in renderDevices)
+                render(device);
         }
     }
 }

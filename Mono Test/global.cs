@@ -12,6 +12,10 @@ namespace Mono_Test {
     /// Used for global access to data and methods
     /// </summary>
     public static class global {
+        public static void initialize() {
+            render.rendering.setGraphicsRefs(game.graphicsDM, game.spritebatch);
+        }
+
         /// <summary>
         /// runs on the first tick of the program, used to experiment and test output
         /// </summary>
@@ -57,7 +61,7 @@ namespace Mono_Test {
         /// </summary>
         public static Game1 game { get { return Program.game; } }
 
-        public static UI.UserInterface ui;
+        public static ui.UserInterface ui;
         /// <summary>
         /// loads and generates the user interface data for the game
         /// </summary>

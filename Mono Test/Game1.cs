@@ -7,11 +7,13 @@ namespace Mono_Test {
     /// This is the main type for your game.
     /// </summary>
     public class Game1 : Game {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        private GraphicsDeviceManager graphicsDeviceManager;
+        public GraphicsDeviceManager graphicsDM { get { return graphicsDeviceManager; } }
+        private SpriteBatch spriteBatch;
+        public SpriteBatch spritebatch { get { return spriteBatch; } }
 
         public Game1() {
-            graphics = new GraphicsDeviceManager(this);
+            graphicsDeviceManager = new GraphicsDeviceManager(this);
             Content.RootDirectory = "data";
         }
 
