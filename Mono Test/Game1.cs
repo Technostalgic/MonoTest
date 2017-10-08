@@ -24,8 +24,7 @@ namespace Mono_Test {
         /// and initialize them as well.
         /// </summary>
         protected override void Initialize() {
-            global.setDefaultControls();
-            global.debugLogInit();
+            global.initialize();
             base.Initialize();
         }
 
@@ -36,6 +35,7 @@ namespace Mono_Test {
         protected override void LoadContent() {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            render.rendering.setGraphicsRefs(global.game.graphicsDM, global.game.spritebatch);
             global.loadUI();
         }
 
@@ -68,6 +68,7 @@ namespace Mono_Test {
             global.updateTotalTimeElapsed(gameTime.ElapsedGameTime);
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            global.draw();
             base.Draw(gameTime);
         }
     }

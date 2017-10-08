@@ -31,9 +31,10 @@ namespace Mono_Test.render {
         /// </summary>
         public void render() {
             rendering.spriteBatch.Begin();
-            for (var i = renderQeue.Count - 1; i >= 0; i--)
+            for (var i = 0; i < renderQeue.Count; i++)
                 renderQeue[i].draw(rendering.spriteBatch);
             renderQeue.Clear();
+
             rendering.spriteBatch.End();
         }
     }
@@ -41,6 +42,11 @@ namespace Mono_Test.render {
     public class renderObject {
         public renderObject() {
             filter = new Color(255, 255, 255);
+        }
+        public renderObject(Vector2 pos, Vector2 size, Color col) {
+            position = pos;
+            scale = size;
+            filter = col;
         }
 
         public Vector2 position;
@@ -62,7 +68,7 @@ namespace Mono_Test.render {
                 0);
         }
     }
-
+    
     public static class rendering {
         public static GraphicsDeviceManager graphicsDM;
         public static SpriteBatch spriteBatch;

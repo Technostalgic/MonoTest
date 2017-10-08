@@ -12,8 +12,14 @@ namespace Mono_Test {
     /// Used for global access to data and methods
     /// </summary>
     public static class global {
+        public static render.renderDevice gameRenderer;
+        public static render.renderDevice menuRenderer;
+
         public static void initialize() {
-            render.rendering.setGraphicsRefs(game.graphicsDM, game.spritebatch);
+            gameRenderer = new render.renderDevice();
+            menuRenderer = new render.renderDevice();
+            setDefaultControls();
+            debugLogInit();
         }
 
         /// <summary>
@@ -34,7 +40,6 @@ namespace Mono_Test {
         public static void updateTotalTimeElapsed(TimeSpan t) {
             ttime = t;
         }
-
         
         /// <summary>
         /// represents the current control scheme
@@ -66,7 +71,6 @@ namespace Mono_Test {
         /// loads and generates the user interface data for the game
         /// </summary>
         public static void loadUI() {
-
         }
 
         /// <summary>
@@ -74,13 +78,19 @@ namespace Mono_Test {
         /// </summary>
         public static void tick() {
             controlMap.checkUserInput();
+            update();
         }
         /// <summary>
         /// main logic tick for game, update world, physics, collisions, etc
         /// </summary>
         /// <param name="t">time elapsed since last update</param>
-        public static void update(TimeSpan etime) {
-
+        public static void update() {
+        }
+        /// <summary>
+        /// renders the game
+        /// </summary>
+        public static void draw() {
+            render.rendering.render(new render.renderDevice[] { gameRenderer, menuRenderer });
         }
 
         /// <summary>
