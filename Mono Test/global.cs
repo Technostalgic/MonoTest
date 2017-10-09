@@ -109,4 +109,9 @@ namespace Mono_Test {
             if (breakCode) throw new Exception(message.ToString());
         }
     }
+    public static class addOns {
+        public static float direction(this Vector2 a) {
+            return (float)Math.Atan2(a.Y, a.X);
+        }
+    }
 }
