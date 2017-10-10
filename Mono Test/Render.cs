@@ -25,6 +25,9 @@ namespace Mono_Test.render {
         public void addObject(renderObject obj) {
             renderQeue.Add(obj);
         }
+        public void addObjects(IEnumerable<renderObject> objs) {
+            foreach(renderObject obj in objs) renderQeue.Add(obj);
+        }
 
         /// <summary>
         /// renders all of the objects that the renderQueue holds

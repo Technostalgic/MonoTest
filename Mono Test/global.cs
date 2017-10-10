@@ -66,11 +66,18 @@ namespace Mono_Test {
         /// </summary>
         public static Game1 game { get { return Program.game; } }
 
-        public static ui.UserInterface ui;
+        public static ui.userInterface usi;
         /// <summary>
         /// loads and generates the user interface data for the game
         /// </summary>
         public static void loadUI() {
+            usi = new ui.userInterface();
+
+            ui.screen scr1 = new ui.screen();
+            ui.menu_button button1 = new ui.menu_button(new box(140, 340, 300, 340), "Test Button");
+
+            usi.screenList.Add(scr1);
+            scr1.addMenu(button1);
         }
 
         /// <summary>
@@ -90,6 +97,7 @@ namespace Mono_Test {
         /// renders the game
         /// </summary>
         public static void draw() {
+            usi.render(menuRenderer);
             render.rendering.render(new render.renderDevice[] { gameRenderer, menuRenderer });
         }
 

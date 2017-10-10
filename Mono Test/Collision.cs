@@ -10,7 +10,7 @@ namespace Mono_Test {
     /// interface used for objects that are meant to test collision
     /// </summary>
     public interface collider {
-        void centerAt(Vector2 position);
+        collider centerAt(Vector2 position);
         Vector2 getCenter();
         box getBoundingBox();
 
@@ -93,6 +93,17 @@ namespace Mono_Test {
                 point.Y > position.Y &&
                 point.Y < bottom);
         }
+
+        public void renderBorder(render.renderDevice rd, Color color, float thickness = 1) {
+            render.renderObject l = new render.renderObject(this.topLeft, new Vector2(thickness, size.Y), color);
+            render.renderObject t = new render.renderObject(this.topLeft, new Vector2(size.X, thickness), color);
+            render.renderObject r = new render.renderObject(new Vector2(right - thickness, top), new Vector2(thickness, size.Y), color);
+            render.renderObject b = new render.renderObject(new Vector2(left, bottom - thickness), new Vector2(size.X, thickness), color);
+            rd.addObjects(new render.renderObject[] { l, t, r, b });
+        }
+        public void renderFill(render.renderDevice rd, Color color) {
+            rd.addObject(new render.renderObject(this.position, this.size, color));
+        }
     }
     public struct ray {
         public ray(Vector2 start, Vector2 end) {
@@ -112,6 +123,12 @@ namespace Mono_Test {
             return new Vector2(
                 position.X + (float)Math.Cos(angle) * length, 
                 position.Y + (float)Math.Sin(angle) * length);
+        }
+        /// <summary>
+        /// returns a ray that starts at this ray's endpoint and points toward this ray's starting point
+        /// </summary>
+        public ray getReverse() {
+            return new ray(this.getEndPosition(), this.position);
         }
 
         /// <summary>
@@ -149,8 +166,9 @@ namespace Mono_Test {
 
         public box collisionTest;
 
-        public void centerAt(Vector2 position) {
+        public collider centerAt(Vector2 position) {
             collisionTest.centerAt(position);
+            return this;
         }
         public Vector2 getCenter() {
             return collisionTest.getCenter();
