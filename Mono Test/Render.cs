@@ -26,14 +26,14 @@ namespace Mono_Test.render {
             renderQeue.Add(obj);
         }
         public void addObjects(IEnumerable<renderObject> objs) {
-            foreach(renderObject obj in objs) renderQeue.Add(obj);
+            foreach (renderObject obj in objs) renderQeue.Add(obj);
         }
 
         /// <summary>
         /// renders all of the objects that the renderQueue holds
         /// </summary>
         public void render() {
-            rendering.spriteBatch.Begin();
+            rendering.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp);
             for (var i = 0; i < renderQeue.Count; i++)
                 renderQeue[i].draw(rendering.spriteBatch);
             renderQeue.Clear();
@@ -44,7 +44,8 @@ namespace Mono_Test.render {
 
     public class renderObject {
         public renderObject() {
-            filter = new Color(255, 255, 255);
+            scale = Vector2.One;
+            filter = Color.White;
         }
         public renderObject(Vector2 pos, Vector2 size, Color col) {
             position = pos;
@@ -58,7 +59,7 @@ namespace Mono_Test.render {
         public float rotation;
         public Color filter;
 
-        public void draw(SpriteBatch sb) {
+        public virtual void draw(SpriteBatch sb) {
             sb.Draw(
                 rendering.getDefaultTexture(),
                 position,
@@ -67,11 +68,73 @@ namespace Mono_Test.render {
                 rotation,
                 origin,
                 scale,
-                SpriteEffects.None, 
+                SpriteEffects.None,
                 0);
         }
     }
-    
+    public class textRender : renderObject {
+        public textRender() {
+            scale = new Vector2(1);
+            font = global.defaultFont;
+        }
+        public textRender(string txt) {
+            scale = new Vector2(1);
+            font = global.defaultFont;
+            text = txt;
+        }
+
+        public SpriteFont font;
+        public string text;
+
+        public void centerAt(Vector2 position) {
+            var sz = font.MeasureString(text);
+            this.position = position - (sz / 2);
+        }
+
+        public override void draw(SpriteBatch sb) {
+            sb.DrawString(
+                font,
+                text,
+                position,
+                filter,
+                rotation,
+                origin,
+                scale,
+                SpriteEffects.None,
+                0f);
+        }
+    }
+    public class textureRender : renderObject{
+        public textureRender() {
+            scale = Vector2.One;
+            filter = Color.White;
+        }
+        public textureRender(Texture2D textureA) {
+            texture = textureA;
+        }
+        public textureRender(Texture2D textureA, Vector2 pos) {
+            texture = textureA;
+            position = pos;
+            scale = Vector2.One;
+            filter = Color.White;
+        }
+
+        public Texture2D texture;
+
+        public override void draw(SpriteBatch sb) {
+            sb.Draw(
+                texture,
+                position,
+                null,
+                filter,
+                rotation,
+                origin,
+                scale,
+                SpriteEffects.None,
+                0);
+        }
+    }
+
     public static class rendering {
         public static GraphicsDeviceManager graphicsDM;
         public static SpriteBatch spriteBatch;

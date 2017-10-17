@@ -1,0 +1,41 @@
+[33mcommit f8e7874cc80b8164b513db59b1190f51e218b46b[m
+Author: Technostalgic <Isaiahnsmith@hotmail.com>
+Date:   Mon Oct 9 21:57:23 2017 -0600
+
+    continue working on graphical user interface
+
+[33mcommit 9f83da99afd5eabb29dba919fd967dc3c167f4fd[m
+Author: Technostalgic <Isaiahnsmith@hotmail.com>
+Date:   Sun Oct 8 22:36:20 2017 -0600
+
+    finish basic collision point vs box testing
+
+[33mcommit aba85baf9b0f6b95341679ae2cb4ebac19c3ed8c[m
+Author: Technostalgic <Isaiahnsmith@hotmail.com>
+Date:   Sun Oct 8 15:49:21 2017 -0600
+
+    finish rendering and gui basics; start working on collision
+
+[33mcommit 085f961d5bfce53cd636f8380aa57d08936b1c78[m
+Author: Technostalgic <Isaiahnsmith@hotmail.com>
+Date:   Sat Oct 7 17:31:12 2017 -0600
+
+    continue working on rendering and user interface
+
+[33mcommit f462f1b09126753539724614c2395b0b9fae6024[m
+Author: Technostalgic <Isaiahnsmith@hotmail.com>
+Date:   Sat Oct 7 16:17:39 2017 -0600
+
+    start creating user interface data structures and rendering methods
+
+[33mcommit 37e8a34db48f692377878adf107566bd1f51c9c2[m
+Author: Technostalgic <Isaiahnsmith@hotmail.com>
+Date:   Fri Oct 6 17:33:17 2017 -0600
+
+    revamp user input/control system
+
+[33mcommit 895d47c69cc8f15c6ed1ffdf391f6d6688f7a809[m
+Author: Technostalgic <Isaiahnsmith@hotmail.com>
+Date:   Fri Oct 6 16:42:46 2017 -0600
+
+    create repository

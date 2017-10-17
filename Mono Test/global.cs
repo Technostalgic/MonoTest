@@ -15,11 +15,33 @@ namespace Mono_Test {
         public static render.renderDevice gameRenderer;
         public static render.renderDevice menuRenderer;
 
+        private static Texture2D _cursorTexture;
+        /// <summary>
+        /// draws the cursor sprite at the cursor's screen position
+        /// </summary>
+        /// <param name="inMenu">whether it should use the menuRenderer or not</param>
+        public static void drawCursor(bool inMenu = true) {
+            render.renderDevice rd = inMenu ? menuRenderer : gameRenderer;
+            MouseState mouse = Mouse.GetState();
+            render.textureRender cursor = new render.textureRender(
+                global._cursorTexture,
+                new Vector2(mouse.X, mouse.Y));
+            rd.addObject(cursor);
+            //log_d(cursor.position);
+        }
+
+        public static SpriteFont defaultFont;
+
         public static void initialize() {
+            loadContent();
             gameRenderer = new render.renderDevice();
             menuRenderer = new render.renderDevice();
             setDefaultControls();
             debugLogInit();
+        }
+        public static void loadContent() {
+            defaultFont = game.Content.Load<SpriteFont>("defaultFont");
+            _cursorTexture = game.Content.Load<Texture2D>("Cursor");
         }
 
         /// <summary>
@@ -74,10 +96,16 @@ namespace Mono_Test {
             usi = new ui.userInterface();
 
             ui.screen scr1 = new ui.screen();
-            ui.menu_button button1 = new ui.menu_button(new box(140, 340, 300, 340), "Test Button");
+            ui.mi_button button1 = new ui.mi_button(new box(140, 340, 300, 340), "Start Game");
+            ui.mi_button button2 = new ui.mi_button(new box(440, 640, 300, 340), "Exit");
+            button2.action = delegate (object args) {
+                game.Exit();
+                return null;
+            };
 
-            usi.screenList.Add(scr1);
             scr1.addMenu(button1);
+            scr1.addMenu(button2);
+            usi.screenList.Add(scr1);
         }
 
         /// <summary>
@@ -92,12 +120,16 @@ namespace Mono_Test {
         /// </summary>
         /// <param name="t">time elapsed since last update</param>
         public static void update() {
+            MouseState mousestate = Mouse.GetState();
+            usi.focusAt(new Vector2(mousestate.X, mousestate.Y));
         }
         /// <summary>
         /// renders the game
         /// </summary>
         public static void draw() {
             usi.render(menuRenderer);
+
+            drawCursor();
             render.rendering.render(new render.renderDevice[] { gameRenderer, menuRenderer });
         }
 
@@ -120,6 +152,11 @@ namespace Mono_Test {
     public static class addOns {
         public static float direction(this Vector2 a) {
             return (float)Math.Atan2(a.Y, a.X);
+        }
+        public static Vector2 rounded(this Vector2 a) {
+            a.X = (int)Math.Round(a.X);
+            a.Y = (int)Math.Round(a.Y);
+            return a;
         }
     }
 }

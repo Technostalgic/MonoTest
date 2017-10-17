@@ -14,7 +14,9 @@ namespace Mono_Test {
 
         public Game1() {
             graphicsDeviceManager = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "data";
+            Content.RootDirectory = "Content"; 
+            graphicsDM.PreferredBackBufferWidth = 800;
+            graphicsDM.PreferredBackBufferHeight = 600;
         }
 
         /// <summary>

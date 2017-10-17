@@ -23,3 +23,5 @@ c:\users\isaiah\documents\visual studio 2015\Projects\Mono Test\Mono Test\bin\Wi
 c:\users\isaiah\documents\visual studio 2015\Projects\Mono Test\Mono Test\obj\x86\Debug\Mono Test.csprojResolveAssemblyReference.cache
 c:\users\isaiah\documents\visual studio 2015\Projects\Mono Test\Mono Test\obj\x86\Debug\Mono Test.exe
 c:\users\isaiah\documents\visual studio 2015\Projects\Mono Test\Mono Test\obj\x86\Debug\Mono Test.pdb
+C:\Users\Isaiah\documents\visual studio 2015\Projects\Mono Test\Mono Test\bin\Windows\x86\Debug\Content\defaultFont.xnb
+C:\Users\Isaiah\documents\visual studio 2015\Projects\Mono Test\Mono Test\bin\Windows\x86\Debug\Content\Cursor.xnb
