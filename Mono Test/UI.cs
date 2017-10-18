@@ -47,6 +47,11 @@ namespace Mono_Test.ui {
             }
             if (!mfoc) currentScreen.menuFocus = -1;
         }
+        public void select() {
+            if (!active) return;
+            currentScreen.select();
+        }
+
         public void update() {
         }
         public void render(render.renderDevice rd) {
@@ -92,6 +97,11 @@ namespace Mono_Test.ui {
             return base.GetHashCode();
         }
 
+        public void select() {
+            if (!active) return;
+            currentMenu.select();
+        }
+
         public void addMenu(menuItem menuA) {
             menuList.Add(menuA);
         }
@@ -129,6 +139,7 @@ namespace Mono_Test.ui {
         }
 
         public virtual void select() {
+            if (!active) return;
             global.log_d("menu item selected: " + this.name);
         }
 
@@ -178,6 +189,7 @@ namespace Mono_Test.ui {
         public bool autoSpacing;
 
         public override void select() {
+            if (!active) return;
             base.select();
             currentItem.select();
         }
@@ -213,7 +225,7 @@ namespace Mono_Test.ui {
         public override void draw(renderDevice rd, Vector2 offset, bool focus = false) {
             base.draw(rd, offset, focus);
             render.textRender rt = new textRender(text);
-            if (focus) rt.filter = Color.Black;
+            if (focus) rt.filter = Color.LightGreen;
             rt.centerAt(this.position + offset);
             rd.addObject(rt);
         }

@@ -6,8 +6,72 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Content;
 
 namespace Mono_Test.render {
+    public class bitmapFont {
+        public bitmapFont() { }
+        /// <summary>
+        /// initializes a bitmap font
+        /// </summary>
+        /// <param name="textureA">the spritesheet with all the characters</param>
+        /// <param name="characterWidth">the width, in pixels of each character</param>
+        /// <param name="characterHeight">the height, in pixels, of each character</param>
+        public bitmapFont(Texture2D textureA, int characterWidth, int characterHeight) {
+            texture = textureA;
+            charWidth = characterWidth;
+            charHeight = characterHeight;
+        }
+
+        public Texture2D texture;
+        public int charWidth;
+        public int charHeight;
+
+        public Rectangle charRect(char character) {
+            Rectangle r = new Rectangle(0, 0, charWidth, charHeight);
+            global.log_d(character.ToString() + ": " + ((int)character).ToString());
+            if ((int)character >= 33 && (int)character < 40) { // symbols
+                r.X = charWidth * ((int)character - 33);
+            }
+            else if ((int)character >= 40 && (int)character < 59) { // 0 - 9 and operators
+                r.X = 212 + charWidth * ((int)character - 48);
+            }
+            else if ((int)character >= 65 && (int)character < 91) { // A - Z
+                r.X = charWidth * ((int)character - 65);
+                r.Y = 16;
+            }
+            else if ((int)character >= 97 && (int)character < 123) { // a - z
+                r.X = charWidth * ((int)character - 97);
+                r.Y = 32;
+            }
+            else r.Height = 0;
+            return r;
+        }
+        public Vector2 measureString(string s) {
+            return new Vector2(charWidth * s.Length, charHeight);
+        }
+
+        public void drawString(SpriteBatch sb, string str, Vector2 position, Color filter, float rotation, Vector2 origin, Vector2 scale) {
+            for (int i = 0; i < str.Length; i++) {
+                float xoff = i * charWidth * scale.X;
+                sb.Draw(texture,
+                    position + new Vector2(xoff, 0),
+                    charRect(str[i]),
+                    filter,
+                    rotation,
+                    origin,
+                    scale,
+                    SpriteEffects.None, 
+                    0f);
+            }
+        }
+
+        public static bitmapFont font_loadDefaultFont() {
+            bitmapFont r = new bitmapFont(global.game.Content.Load<Texture2D>("font"), 14, 16);
+            return r;
+        }
+    }
+
     public class renderDevice {
         public renderDevice() {
             renderQeue = new List<renderObject>();
@@ -83,25 +147,23 @@ namespace Mono_Test.render {
             text = txt;
         }
 
-        public SpriteFont font;
+        public bitmapFont font;
         public string text;
 
         public void centerAt(Vector2 position) {
-            var sz = font.MeasureString(text);
+            var sz = font.measureString(text);
             this.position = position - (sz / 2);
         }
 
         public override void draw(SpriteBatch sb) {
-            sb.DrawString(
-                font,
+            font.drawString(
+                sb,
                 text,
                 position,
                 filter,
                 rotation,
                 origin,
-                scale,
-                SpriteEffects.None,
-                0f);
+                scale);
         }
     }
     public class textureRender : renderObject{

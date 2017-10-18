@@ -14,6 +14,7 @@ namespace Mono_Test {
     public static class global {
         public static render.renderDevice gameRenderer;
         public static render.renderDevice menuRenderer;
+        public static Random random;
 
         private static Texture2D _cursorTexture;
         /// <summary>
@@ -30,9 +31,10 @@ namespace Mono_Test {
             //log_d(cursor.position);
         }
 
-        public static SpriteFont defaultFont;
+        public static render.bitmapFont defaultFont;
 
         public static void initialize() {
+            random = new Random();
             loadContent();
             gameRenderer = new render.renderDevice();
             menuRenderer = new render.renderDevice();
@@ -40,8 +42,13 @@ namespace Mono_Test {
             debugLogInit();
         }
         public static void loadContent() {
-            defaultFont = game.Content.Load<SpriteFont>("defaultFont");
+            loadFont();
             _cursorTexture = game.Content.Load<Texture2D>("Cursor");
+        }
+        private static void loadFont() {
+            defaultFont = render.bitmapFont.font_loadDefaultFont();
+            foreach(char c in "!\"# % \' () +,-./0123456789:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+                defaultFont.charRect(c);
         }
 
         /// <summary>
@@ -129,7 +136,10 @@ namespace Mono_Test {
         public static void draw() {
             usi.render(menuRenderer);
 
+            gameRenderer.addObject(new render.textureRender(defaultFont.texture));
+
             drawCursor();
+
             render.rendering.render(new render.renderDevice[] { gameRenderer, menuRenderer });
         }
 
@@ -138,7 +148,9 @@ namespace Mono_Test {
         /// </summary>
         /// <param name="message">the string to output to the log, if it is not a string, it will be casted to one</param>
         public static void log_d(object message) {
-            Console.WriteLine(message.ToString());
+            if (message == null)
+                Console.WriteLine(" >>NULL");
+            else Console.WriteLine(message.ToString());
         }
         /// <summary>
         /// console output -> log the message, treated as error message
