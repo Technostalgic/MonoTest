@@ -21,41 +21,64 @@ namespace Mono_Test.render {
             texture = textureA;
             charWidth = characterWidth;
             charHeight = characterHeight;
+            spacing = -2;
+            characterWidths = new int[78];
+            for (var i = characterWidths.Length - 1; i >= 0; i--) {
+                characterWidths[i] = charWidth;
+            }
         }
 
         public Texture2D texture;
         public int charWidth;
         public int charHeight;
+        public int spacing;
+        public int[] characterWidths;
 
         public Rectangle charRect(char character) {
-            Rectangle r = new Rectangle(0, 0, charWidth, charHeight);
-            global.log_d(character.ToString() + ": " + ((int)character).ToString());
-            if ((int)character >= 33 && (int)character < 40) { // symbols
-                r.X = charWidth * ((int)character - 33);
-            }
-            else if ((int)character >= 40 && (int)character < 59) { // 0 - 9 and operators
-                r.X = 212 + charWidth * ((int)character - 48);
-            }
-            else if ((int)character >= 65 && (int)character < 91) { // A - Z
-                r.X = charWidth * ((int)character - 65);
-                r.Y = 16;
-            }
-            else if ((int)character >= 97 && (int)character < 123) { // a - z
-                r.X = charWidth * ((int)character - 97);
-                r.Y = 32;
-            }
-            else r.Height = 0;
+            Point spc = charSpritePlace(character);
+            Rectangle r = new Rectangle(spc.X * charWidth, spc.Y * charHeight, charWidth, charHeight);
+            if (character == ' ') r.Height = 0;
             return r;
         }
         public Vector2 measureString(string s) {
-            return new Vector2(charWidth * s.Length, charHeight);
+            float w = 0;
+            for (int i = 0; i < s.Length; i++) {
+                float xoff = (specificCharWidth(s[i]) + spacing);
+                w += xoff;
+            }
+            return new Vector2(w, charHeight);
+        }
+
+        public int specificCharWidth(char c) {
+            Point spc = charSpritePlace(c);
+            global.log_d(c.ToString() + characterWidths[spc.X + (spc.Y * 26)].ToString());
+            return characterWidths[spc.X + (spc.Y * 26)];
+        }
+        public Point charSpritePlace(char c) {
+            var r = new Point();
+            if ((int)c >= 33 && (int)c < 40) { // symbols
+                r.X = ((int)c - 33);
+            }
+            else if ((int)c >= 40 && (int)c < 59) { // 0 - 9 and operators
+                r.X = 15 + ((int)c - 48);
+            }
+            else if ((int)c >= 65 && (int)c < 91) { // A - Z
+                r.X = ((int)c - 65);
+                r.Y = 1;
+            }
+            else if ((int)c >= 97 && (int)c < 123) { // a - z
+                r.X = ((int)c - 97);
+                r.Y = 2;
+            }
+            return r;
         }
 
         public void drawString(SpriteBatch sb, string str, Vector2 position, Color filter, float rotation, Vector2 origin, Vector2 scale) {
+            float w = 0;
             for (int i = 0; i < str.Length; i++) {
-                float xoff = i * charWidth * scale.X;
+                float xoff = (specificCharWidth(str[i]) + spacing) * scale.X;
                 sb.Draw(texture,
-                    position + new Vector2(xoff, 0),
+                    position + new Vector2(w, 0),
                     charRect(str[i]),
                     filter,
                     rotation,
@@ -63,11 +86,17 @@ namespace Mono_Test.render {
                     scale,
                     SpriteEffects.None, 
                     0f);
+                w += xoff;
             }
         }
 
         public static bitmapFont font_loadDefaultFont() {
             bitmapFont r = new bitmapFont(global.game.Content.Load<Texture2D>("font"), 14, 16);
+            r.characterWidths = new int[] {
+                6,14,14,14,14,14,8,8,8,14,10,8,10,6,14,12,10,10,10,10,10,10,10,10,10,8,
+                10,10,10,10,10,10,10,10,6,10,10,10,10,10,11,10,10,10,10,10,10,10,14,10,10,10,
+                10,10,10,10,10,8,10,10,6,10,10,6,14,10,10,10,10,10,10,10,10,10,14,10,10,10,
+            };
             return r;
         }
     }
