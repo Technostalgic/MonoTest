@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace Mono_Test.render {
     public class bitmapFont {
-        public bitmapFont() { }
+        public bitmapFont() {}
         /// <summary>
         /// initializes a bitmap font
         /// </summary>
@@ -21,17 +21,13 @@ namespace Mono_Test.render {
             texture = textureA;
             charWidth = characterWidth;
             charHeight = characterHeight;
-            spacing = -2;
-            characterWidths = new int[78];
-            for (var i = characterWidths.Length - 1; i >= 0; i--) {
-                characterWidths[i] = charWidth;
-            }
         }
 
         public Texture2D texture;
         public int charWidth;
         public int charHeight;
         public int spacing;
+        public bool useSpecificCharWidths;
         public int[] characterWidths;
 
         public Rectangle charRect(char character) {
@@ -43,7 +39,9 @@ namespace Mono_Test.render {
         public Vector2 measureString(string s) {
             float w = 0;
             for (int i = 0; i < s.Length; i++) {
-                float xoff = (specificCharWidth(s[i]) + spacing);
+                float xoff = charWidth + spacing;
+                if(useSpecificCharWidths)
+                    xoff = (specificCharWidth(s[i]) + spacing);
                 w += xoff;
             }
             return new Vector2(w, charHeight);
@@ -51,7 +49,6 @@ namespace Mono_Test.render {
 
         public int specificCharWidth(char c) {
             Point spc = charSpritePlace(c);
-            global.log_d(c.ToString() + characterWidths[spc.X + (spc.Y * 26)].ToString());
             return characterWidths[spc.X + (spc.Y * 26)];
         }
         public Point charSpritePlace(char c) {
@@ -76,7 +73,9 @@ namespace Mono_Test.render {
         public void drawString(SpriteBatch sb, string str, Vector2 position, Color filter, float rotation, Vector2 origin, Vector2 scale) {
             float w = 0;
             for (int i = 0; i < str.Length; i++) {
-                float xoff = (specificCharWidth(str[i]) + spacing) * scale.X;
+                float xoff = (charWidth + spacing) * scale.X;
+                if(useSpecificCharWidths)
+                    xoff = (specificCharWidth(str[i]) + spacing) * scale.X;
                 sb.Draw(texture,
                     position + new Vector2(w, 0),
                     charRect(str[i]),
@@ -97,6 +96,8 @@ namespace Mono_Test.render {
                 10,10,10,10,10,10,10,10,6,10,10,10,10,10,11,10,10,10,10,10,10,10,14,10,10,10,
                 10,10,10,10,10,8,10,10,6,10,10,6,14,10,10,10,10,10,10,10,10,10,14,10,10,10,
             };
+            r.useSpecificCharWidths = true;
+            r.spacing = -2;
             return r;
         }
     }
