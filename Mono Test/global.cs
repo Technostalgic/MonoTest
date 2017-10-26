@@ -15,6 +15,7 @@ namespace Mono_Test {
         public static render.renderDevice gameRenderer;
         public static render.renderDevice menuRenderer;
         public static Random random;
+        public static Color bgColor;
 
         private static Texture2D _cursorTexture;
         /// <summary>
@@ -28,16 +29,21 @@ namespace Mono_Test {
                 global._cursorTexture,
                 new Vector2(mouse.X, mouse.Y));
             rd.addObject(cursor);
+            int[] a = new int[32];
+            bool[] test = new bool[4];
+
             //log_d(cursor.position);
         }
 
         public static render.bitmapFont defaultFont;
 
         public static void initialize() {
+            bgColor = Color.Gainsboro;
             random = new Random();
             loadContent();
             gameRenderer = new render.renderDevice();
             menuRenderer = new render.renderDevice();
+            Input.init();
             setDefaultControls();
             debugLogInit();
         }
@@ -47,8 +53,6 @@ namespace Mono_Test {
         }
         private static void loadFont() {
             defaultFont = render.bitmapFont.font_loadDefaultFont();
-            foreach(char c in "!\"# % \' () +,-./0123456789:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-                defaultFont.charRect(c);
         }
 
         /// <summary>
@@ -103,15 +107,16 @@ namespace Mono_Test {
             usi = new ui.userInterface();
 
             ui.screen scr1 = new ui.screen();
-            ui.mi_button button1 = new ui.mi_button(new box(140, 340, 300, 340), "Start Game");
-            ui.mi_button button2 = new ui.mi_button(new box(440, 640, 300, 340), "Exit");
-            button2.action = delegate (object args) {
+            ui.mi_button start = new ui.mi_button(new box(140, 340, 300, 340), "Start Game");
+            ui.mi_button quit = new ui.mi_button(new box(440, 640, 300, 340), "Exit");
+            quit.action = delegate (object args) {
                 game.Exit();
+                
                 return null;
             };
 
-            scr1.addMenu(button1);
-            scr1.addMenu(button2);
+            scr1.addMenu(start);
+            scr1.addMenu(quit);
             usi.screenList.Add(scr1);
         }
 
@@ -119,6 +124,7 @@ namespace Mono_Test {
         /// main general logic tick
         /// </summary>
         public static void tick() {
+            Input.refresh();
             controlMap.checkUserInput();
             update();
         }
@@ -127,8 +133,10 @@ namespace Mono_Test {
         /// </summary>
         /// <param name="t">time elapsed since last update</param>
         public static void update() {
-            MouseState mousestate = Mouse.GetState();
-            usi.focusAt(new Vector2(mousestate.X, mousestate.Y));
+            if (Input.isMouseMoving())
+                usi.focusAt(Input.mousePos());
+            if (Input.isMouseClicked())
+                usi.select();
         }
         /// <summary>
         /// renders the game
@@ -136,7 +144,7 @@ namespace Mono_Test {
         public static void draw() {
             usi.render(menuRenderer);
 
-            gameRenderer.addObject(new render.textureRender(defaultFont.texture));
+            //gameRenderer.addObject(new render.textureRender(defaultFont.texture));
 
             drawCursor();
 

@@ -25,7 +25,7 @@ namespace Mono_Test {
         /// <param name="self">the gameControl object to apply the activation check to</param>
         public static activatedCheck ac_keyboard(gameControl self) {
             return delegate () {
-                return Keyboard.GetState().IsKeyDown((Keys)self.id);
+                return Input.isKeyPressed((Keys)self.id);
             };
         }
 

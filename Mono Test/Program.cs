@@ -14,9 +14,8 @@ namespace Mono_Test {
         [STAThread]
         static void Main()
         {
-            game = new Game1();
-            game.Run();
-            game.Dispose();
+            using (game = new Game1())
+                game.Run();
         }
     }
 #endif

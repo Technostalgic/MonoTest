@@ -49,6 +49,7 @@ namespace Mono_Test.ui {
         }
         public void select() {
             if (!active) return;
+            if (screenFocus < 0) return;
             currentScreen.select();
         }
 
@@ -99,6 +100,7 @@ namespace Mono_Test.ui {
 
         public void select() {
             if (!active) return;
+            if (menuFocus < 0) return;
             currentMenu.select();
         }
 
@@ -219,6 +221,7 @@ namespace Mono_Test.ui {
         public object args;
 
         public override void select() {
+            if (action == null) return;
             action(args);
             base.select();
         }

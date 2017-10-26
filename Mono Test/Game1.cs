@@ -68,7 +68,7 @@ namespace Mono_Test {
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime) {
             global.updateTotalTimeElapsed(gameTime.ElapsedGameTime);
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(global.bgColor);
 
             global.draw();
             base.Draw(gameTime);
