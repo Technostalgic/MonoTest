@@ -124,6 +124,7 @@ namespace Mono_Test {
         }
 
         public List<controlBinding> bindings;
+        public List<controlBinding[]> bindingGroups;
 
         /// <summary>
         /// checks to see if the user has triggered any of the controls
@@ -133,11 +134,31 @@ namespace Mono_Test {
                 binding.check();
         }
 
+        /// <summary>
+        /// set's the specified group of control bindings to the specified active state
+        /// </summary>
+        /// <param name="group">the group to set</param>
+        /// <param name="active">what to set the controlbindings' active to (active/inactive)</param>
+        public void setGroupActive(controlBinding[] group, bool active = true) {
+            foreach (controlBinding binding in group)
+                binding.active = active;
+        }
+        public void setGroupActive(int groupIndex, bool active = true) {
+            setGroupActive(this.bindingGroups[groupIndex], active);
+        }
+
         public static controlScheme getDefaultControlScheme() {
             controlScheme r = new controlScheme();
 
-            r.bindings = new List<controlBinding>() {
+            controlBinding[] menu = new controlBinding[] {
                 new controlBinding(gameControl.keyboardControl(Keys.Enter), ca_LogTrigger, controlBinding.triggerType.firstTick),
+                new controlBinding(gameControl.keyboardControl(Keys.Space), ca_LogTrigger, controlBinding.triggerType.firstTick),
+                new controlBinding(gameControl.keyboardControl(Keys.Down), ca_LogTrigger).setTriggerInterval(20),
+                new controlBinding(gameControl.keyboardControl(Keys.Up), ca_LogTrigger).setTriggerInterval(20),
+                new controlBinding(gameControl.keyboardControl(Keys.Right), ca_LogTrigger).setTriggerInterval(20),
+                new controlBinding(gameControl.keyboardControl(Keys.Left), ca_LogTrigger).setTriggerInterval(20)
+            };
+            controlBinding[] ingame = new controlBinding[] {
                 new controlBinding(gameControl.keyboardControl(Keys.Down), ca_LogTrigger, controlBinding.triggerType.eachTick),
                 new controlBinding(gameControl.keyboardControl(Keys.Up), ca_LogTrigger, controlBinding.triggerType.eachTick),
                 new controlBinding(gameControl.keyboardControl(Keys.Right), ca_LogTrigger, controlBinding.triggerType.eachTick),
@@ -145,8 +166,15 @@ namespace Mono_Test {
                 new controlBinding(gameControl.keyboardControl(Keys.Z), ca_LogTrigger, controlBinding.triggerType.firstTick),
                 new controlBinding(gameControl.keyboardControl(Keys.X), ca_LogTrigger, controlBinding.triggerType.eachTick),
                 new controlBinding(gameControl.keyboardControl(Keys.C), ca_LogTrigger, controlBinding.triggerType.eachTick),
-                new controlBinding(gameControl.keyboardControl(Keys.Space), ca_LogTrigger, controlBinding.triggerType.firstTick)
             };
+
+            r.bindings = new List<controlBinding>();
+            r.bindings.AddRange(menu);
+            r.bindings.AddRange(ingame);
+
+            r.bindingGroups = new List<controlBinding[]>() { menu, ingame };
+            r.setGroupActive(menu, true);
+            r.setGroupActive(ingame, false);
 
             return r;
         }
