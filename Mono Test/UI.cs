@@ -55,8 +55,9 @@ namespace Mono_Test.ui {
 
         public void update() {
         }
-        public void render(render.renderDevice rd) {
+        public void draw(render.renderDevice rd) {
             currentScreen.render(rd);
+            rd.render();
         }
     }
     /// <summary>
@@ -64,21 +65,16 @@ namespace Mono_Test.ui {
     /// </summary>
     public class screen {
         public screen() {
-            UID = getNextUID();
             name = "ui.screen_defaultName";
             active = true;
             menuList = new List<menuItem>();
             menuFocus = -1;
         }
 
-        private static uint nextUID;
-        private static uint getNextUID() {
-            nextUID++;
-            return nextUID;
-        }
+        private static uint nextUid;
+        public static uint nextUID { get { return nextUid++; } }
 
-        private uint UID;
-        public uint uid { get { return UID; } }
+        public readonly uint UID = nextUID;
 
         public string name;
         public Vector2 position;
@@ -88,14 +84,14 @@ namespace Mono_Test.ui {
         internal int menuFocus;
         public menuItem currentMenu { get { return menuList[menuFocus]; } }
 
-        public static bool operator== (screen a, screen b) { return a.uid == b.uid; }
+        public static bool operator== (screen a, screen b) { return a.UID == b.UID; }
         public static bool operator!= (screen a, screen b) { return !(a == b); }
         public override bool Equals(object obj) {
             if (!(obj is screen)) return false;
             return this == (screen)obj;
         }
         public override int GetHashCode() {
-            return base.GetHashCode();
+            return UID.GetHashCode();
         }
 
         public void select() {

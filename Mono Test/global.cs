@@ -12,10 +12,19 @@ namespace Mono_Test {
     /// Used for global access to data and methods
     /// </summary>
     public static class global {
+        public enum gameMode {
+            intro,
+            menu,
+            gameplay
+        }
+
         public static render.renderDevice gameRenderer;
         public static render.renderDevice menuRenderer;
         public static Random random;
         public static Color bgColor;
+        public static gameMode currentGameMode;
+        public static gameEnvironment gameplayEnvironment;
+
 
         private static Texture2D _cursorTexture;
         /// <summary>
@@ -38,6 +47,8 @@ namespace Mono_Test {
         public static render.bitmapFont defaultFont;
 
         public static void initialize() {
+            currentGameMode = gameMode.intro;
+            gameplayEnvironment = new gameEnvironment();
             bgColor = Color.Gainsboro;
             random = new Random();
             loadContent();
@@ -66,11 +77,13 @@ namespace Mono_Test {
         /// represents the total time elapsed since the game was first run
         /// </summary>
         private static TimeSpan ttime;
+        private static TimeSpan dtime;
         /// <summary>
         /// Updates the coutner for totalTimeElapsed, ttime
         /// </summary>
         /// <param name="t">time to update it to</param>
         public static void updateTotalTimeElapsed(TimeSpan t) {
+            dtime = t - ttime;
             ttime = t;
         }
         
@@ -108,12 +121,9 @@ namespace Mono_Test {
 
             ui.screen scr1 = new ui.screen();
             ui.mi_button start = new ui.mi_button(new box(140, 340, 300, 340), "Start Game");
+            start.action = controlActions.startGame;
             ui.mi_button quit = new ui.mi_button(new box(440, 640, 300, 340), "Exit");
-            quit.action = delegate (object args) {
-                game.Exit();
-                
-                return null;
-            };
+            quit.action = controlActions.exitGame;
 
             scr1.addMenu(start);
             scr1.addMenu(quit);
@@ -124,31 +134,63 @@ namespace Mono_Test {
         /// main general logic tick
         /// </summary>
         public static void tick() {
-            Input.refresh();
-            controlMap.checkUserInput();
+            if (game.IsActive) {
+                Input.refresh();
+                controlMap.checkUserInput();
+            }
             update();
         }
         /// <summary>
-        /// main logic tick for game, update world, physics, collisions, etc
+        /// main logic tick for game
         /// </summary>
         /// <param name="t">time elapsed since last update</param>
         public static void update() {
+            switch (currentGameMode) {
+                case gameMode.intro: currentGameMode = gameMode.menu; break;
+                case gameMode.menu: menuUpdate(); break;
+                case gameMode.gameplay: gamePlayUpdate(dtime); break;
+            }
+        }
+        /// <summary>
+        /// main update logic for in-menu interactions
+        /// </summary>
+        public static void menuUpdate() {
             if (Input.isMouseMoving())
                 usi.focusAt(Input.mousePos());
             if (Input.isMouseClicked())
                 usi.select();
         }
         /// <summary>
+        /// main update logic for the game engine: physics, collision, etc
+        /// </summary>
+        /// <param name="deltaTime"></param>
+        public static void gamePlayUpdate(TimeSpan deltaTime) {
+            gameplayEnvironment.update(deltaTime);
+        }
+
+        public static void startGame() {
+            currentGameMode = gameMode.gameplay;
+        }
+        public static void pauseGame() {
+            currentGameMode = gameMode.menu;
+        }
+
+        /// <summary>
         /// renders the game
         /// </summary>
         public static void draw() {
-            usi.render(menuRenderer);
-
-            //gameRenderer.addObject(new render.textureRender(defaultFont.texture));
-
-            drawCursor();
-
-            render.rendering.render(new render.renderDevice[] { gameRenderer, menuRenderer });
+            switch (currentGameMode) {
+                case gameMode.intro:
+                    break;
+                case gameMode.menu:
+                    usi.draw(menuRenderer);
+                    drawCursor();
+                    menuRenderer.render();
+                    break;
+                case gameMode.gameplay:
+                    gameplayEnvironment.draw();
+                    break;
+            }
         }
 
         /// <summary>
@@ -178,5 +220,35 @@ namespace Mono_Test {
             a.Y = (int)Math.Round(a.Y);
             return a;
         }
+
+        /// <summary>
+        /// applies a time factor to the delta vector.
+        /// NOTE: the vector you are applying this to should be a vector that
+        /// represents a change of value over time in terms of pixels per 
+        /// 60th of a second
+        /// </summary>
+        /// <param name="deltaTime">the amount of time that has passed</param>
+        /// <param name="timescale">the scale that time is passing by</param>
+        /// <returns></returns>
+        public static Vector2 timeFactored(this Vector2 a, TimeSpan deltaTime, float timescale ) {
+            // the resulting value is in pixels per second
+            a = a * deltaTime.Seconds;
+            return a * timescale;
+        }
+    }
+    public static class controlActions {
+        // ui controls:
+        public static object startGame(object args) {
+            global.startGame();
+            return null;
+        }
+        public static object exitGame(object args) {
+            Program.game.Exit();
+            Environment.Exit(0);
+            return null;
+        }
+
+        // keybaord / gamepad controls:
+
     }
 }

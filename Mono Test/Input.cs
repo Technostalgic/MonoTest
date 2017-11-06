@@ -99,7 +99,7 @@ namespace Mono_Test {
             keyboardState = Keyboard.GetState();
         }
 
-        public  enum mouseButton {
+        public enum mouseButton {
             Left,
             Right,
             Middle

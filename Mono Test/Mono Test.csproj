@@ -41,6 +41,8 @@
     <Compile Include="Collision.cs" />
     <Compile Include="Controls.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="gameEnvironment.cs" />
+    <Compile Include="gameObject.cs" />
     <Compile Include="global.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="Program.cs" />

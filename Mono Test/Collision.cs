@@ -10,7 +10,13 @@ namespace Mono_Test {
     /// interface used for objects that are meant to test collision
     /// </summary>
     public interface collider {
+        /// <summary>
+        /// sets the center of the collider to the specified position
+        /// </summary>
+        /// <param name="position">the specified position</param>
+        /// <returns></returns>
         collider centerAt(Vector2 position);
+
         Vector2 getCenter();
         box getBoundingBox();
 
@@ -44,7 +50,12 @@ namespace Mono_Test {
         Vector2? rayIntersect(ray r);
     }
 
+    /// <summary>
+    /// an axis-aligned bounding box
+    /// </summary>
     public struct box {
+
+
         public box(Vector2 positionA, Vector2 sizeA) {
             position = positionA;
             size = sizeA;
@@ -71,6 +82,9 @@ namespace Mono_Test {
         public Vector2 topRight { get { return new Vector2(top, right); } }
         public Vector2 bottomLeft { get { return new Vector2(bottom, left); } }
         public Vector2 bottomRight { get { return new Vector2(bottom, right); } }
+        public Vector2 getSize() {
+            return this.size;
+        }
         public Vector2 getCenter() {
             return this.position + (this.size / 2f);
         }
@@ -105,6 +119,9 @@ namespace Mono_Test {
             rd.addObject(new render.renderObject(this.position, this.size, color));
         }
     }
+    /// <summary>
+    /// a ray used for making raycasting calculations
+    /// </summary>
     public struct ray {
         public ray(Vector2 start, Vector2 end) {
             position = start;
@@ -136,19 +153,28 @@ namespace Mono_Test {
         /// </summary>
         /// <param name="r">the ray to test intersection with</param>
         /// <returns></returns>
-        public Vector2? rayIntersect(ray r) { return null; }
+        public Vector2? rayIntersect(ray r) {
+            global.log_e("Not implemented yet");
+            return null;
+        }
         /// <summary>
         /// returns the intersection point between this ray and a box
         /// </summary>
         /// <param name="b">the box to test for intersection with</param>
         /// <returns></returns>
-        public Vector2? boxIntersect(box b) { return null; }
+        public Vector2? boxIntersect(box b) {
+            global.log_e("Not implemented yet");
+            return null;
+        }
         /// <summary>
         /// returns the intersection point between the ray and a circle
         /// </summary>
         /// <param name="origin">the center of the circle</param>
         /// <param name="radius">the radius of the circle</param>
-        public Vector2? radialIntersect(Vector2 origin, float radius) { return null; }
+        public Vector2? radialIntersect(Vector2 origin, float radius) {
+            global.log_e("Not implemented yet");
+            return null;
+        }
         /// <summary>
         /// returns the intersection point between the ray and a collider
         /// </summary>
@@ -180,19 +206,19 @@ namespace Mono_Test {
             return collisionTest.containsPoint(point, inclusive);
         }
         public bool overlapping(collider c) {
-            global.log_e("CollsionBox.overlapping(collider) not implemented");
+            global.log_e("Not implemented yet");
             return false;
         }
         public Vector2? intersectionPoint(collider c, bool favor) {
-            global.log_e("CollsionBox.intersectionPoint(collider, bool) not implemented");
+            global.log_e("Not implemented yet");
             return null;
         }
         public box? intersectionBounds(collider c) {
-            global.log_e("CollsionBox.intersectionBounds(collider) not implemented");
+            global.log_e("Not implemented yet");
             return null;
         }
         public Vector2? rayIntersect(ray r) {
-            global.log_e("CollsionBox.rayIntersect(ray) not implemented");
+            global.log_e("Not implemented yet");
             return null;
         }
     }
