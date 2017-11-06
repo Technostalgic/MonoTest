@@ -7,12 +7,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Mono_Test {
-    public interface iUpdateable {
-        void update(TimeSpan dt);
-    }
-    public interface iDrawable {
-        void draw(render.renderDevice rd);
-    }
 
     public class gameObject {
         static uint nextUid;
@@ -38,19 +32,24 @@ namespace Mono_Test {
             return UID.GetHashCode();
         }
 
-        public void worldAdd(gameEnvironment environmentA) {
+        public virtual void worldAdd(gameEnvironment environmentA) {
             if (inWorld) return;
             environment.add(this);
             _environment = environmentA;
         }
-        public void worldRemove() {
+        public virtual void worldRemove() {
             if (!inWorld) return;
             environment.remove(this);
             _environment = null;
         }
+
+        public virtual void update(TimeSpan dt) {
+        }
+        public virtual void draw(render.renderDevice rd) {
+        }
     }
 
-    public class character : gameObject, iUpdateable, iDrawable {
+    public class character : gameObject {
         public character() {
             collision = new collisionBox(new box(new Vector2(20, 20)));
         }

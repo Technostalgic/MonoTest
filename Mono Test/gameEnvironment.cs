@@ -35,14 +35,12 @@ namespace Mono_Test {
 
         public void update(TimeSpan dt) {
             for (int i = objects.Count - 1; i >= 0; i--)
-                if (objects[i] is iUpdateable)
-                    ((iUpdateable)objects[i]).update(dt);
+                objects[i].update(dt);
             
         }
         public void draw() {
             for (int i = objects.Count - 1; i >= 0; i--)
-                if (objects[i] is iDrawable)
-                    ((iDrawable)objects[i]).draw(renderer);
+                objects[i].draw(renderer);
             renderer.render();
         }
 
